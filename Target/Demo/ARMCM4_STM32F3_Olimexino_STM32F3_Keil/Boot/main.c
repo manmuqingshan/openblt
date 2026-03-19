@@ -81,6 +81,11 @@ static void Init(void)
   HAL_Init();
   /* Configure system clock. */
   SystemClock_Config();
+  /* Connect the device to the USB host by setting USB DISC (PC12) low. This turns the
+   * P-MOSFET on, which enables the pull-up on the USB_DP line. This in turns triggers
+   * the USB host to start the enumaration process.
+   */
+  LL_GPIO_ResetOutputPin(GPIOC, LL_GPIO_PIN_12);
 } /*** end of Init ***/
 
 /************************************************************************************//**
@@ -196,7 +201,13 @@ void HAL_MspInit(void)
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
   LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
   
-  /* Configure GPIO pin for the USB connect. */
+  /* Configure GPIO pin for the USB connect.  Out of reset, the Olimexino-STM32F3 board
+   * enables a pull-up on the USB_DP line. If the board already enumerated, then it might
+   * stay in that state, even after a reset. It is therefore best to first make sure the
+   * USB device disconnects from the USB host. This is done by configuring USB DISC
+   * (PC12) as a digital output and setting it logic high. This turns the P-MOSFET off, 
+   * which disables the pull-up on the USB_DP line.
+   */
   LL_GPIO_SetOutputPin(GPIOC, LL_GPIO_PIN_12);
   GPIO_InitStruct.Pin = LL_GPIO_PIN_12;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
@@ -251,7 +262,7 @@ void HAL_MspDeInit(void)
   LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* Make sure USB DISC (PC12) stays high to disable the pull-up on the USB D+ line,
-   * needed to place the USB device in the disconnected state. Otherwise a possible
+   * needed to place the USB device in the disconnected state. Otherwise a possibly
    * connected USB host will attempt to enumerate, which will fail because the USB
    * device is not active at this time.
    */

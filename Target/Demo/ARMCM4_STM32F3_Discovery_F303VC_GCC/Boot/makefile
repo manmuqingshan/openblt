@@ -67,6 +67,22 @@ PROJ_FILES += $(wildcard ../../../Source/ARMCM4_STM32F3/*.h)
 # Collect bootloader port compiler specific files
 PROJ_FILES += $(wildcard ../../../Source/ARMCM4_STM32F3/GCC/*.c)
 PROJ_FILES += $(wildcard ../../../Source/ARMCM4_STM32F3/GCC/*.h)
+# Collect TinyUSB third party library files
+PROJ_FILES += $(wildcard ../../../Source/third_party/tinyusb/src/*.c)
+PROJ_FILES += $(wildcard ../../../Source/third_party/tinyusb/src/*.h)
+PROJ_FILES += $(wildcard ../../../Source/third_party/tinyusb/src/class/vendor/*.c)
+PROJ_FILES += $(wildcard ../../../Source/third_party/tinyusb/src/class/vendor/*.h)
+PROJ_FILES += $(wildcard ../../../Source/third_party/tinyusb/src/common/*.c)
+PROJ_FILES += $(wildcard ../../../Source/third_party/tinyusb/src/common/*.h)
+PROJ_FILES += $(wildcard ../../../Source/third_party/tinyusb/src/device/*.c)
+PROJ_FILES += $(wildcard ../../../Source/third_party/tinyusb/src/device/*.h)
+PROJ_FILES += $(wildcard ../../../Source/third_party/tinyusb/src/osal/*.c)
+PROJ_FILES += $(wildcard ../../../Source/third_party/tinyusb/src/osal/*.h)
+PROJ_FILES += $(wildcard ../../../Source/third_party/tinyusb/src/portable/*.c)
+PROJ_FILES += $(wildcard ../../../Source/third_party/tinyusb/src/portable/*.h)
+PROJ_FILES += ../../../Source/third_party/tinyusb/src/portable/st/stm32_fsdev/dcd_stm32_fsdev.c
+PROJ_FILES += ../../../Source/third_party/tinyusb/src/portable/st/stm32_fsdev/fsdev_stm32.h
+PROJ_FILES += ../../../Source/third_party/tinyusb/src/portable/st/stm32_fsdev/fsdev_type.h
 
 
 #|--------------------------------------------------------------------------------------|
@@ -101,8 +117,6 @@ LIB_PATH  =
 #|--------------------------------------------------------------------------------------|
 #| Options for toolchain binaries                                                       |
 #|--------------------------------------------------------------------------------------|
-HEAP_SIZE   = 0x0800
-STACK_SIZE  = 0x0800
 STDFLAGS    = -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -fno-strict-aliasing
 STDFLAGS   += -fdata-sections -ffunction-sections -Wall -g3
 OPTFLAGS    = -Os

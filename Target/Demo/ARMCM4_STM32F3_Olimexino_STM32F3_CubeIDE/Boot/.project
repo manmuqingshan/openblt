@@ -65,12 +65,21 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1686649554358</id>
+			<id>1773832788693</id>
 			<name>Loader/third_party</name>
 			<type>9</type>
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
 				<arguments>1.0-name-matches-false-false-fatfs</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1773832788696</id>
+			<name>Loader/third_party</name>
+			<type>9</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-tinyusb</arguments>
 			</matcher>
 		</filter>
 		<filter>
@@ -83,12 +92,39 @@
 			</matcher>
 		</filter>
 		<filter>
+			<id>1773832799015</id>
+			<name>Loader/third_party/tinyusb</name>
+			<type>9</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-src</arguments>
+			</matcher>
+		</filter>
+		<filter>
 			<id>1686649590858</id>
 			<name>Loader/third_party/fatfs/src/option</name>
 			<type>5</type>
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
 				<arguments>1.0-name-matches-false-false-unicode.c</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1773832809624</id>
+			<name>Loader/third_party/tinyusb/src/portable</name>
+			<type>9</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-st</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1773832821764</id>
+			<name>Loader/third_party/tinyusb/src/portable/st</name>
+			<type>9</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-stm32_fsdev</arguments>
 			</matcher>
 		</filter>
 	</filteredResources>

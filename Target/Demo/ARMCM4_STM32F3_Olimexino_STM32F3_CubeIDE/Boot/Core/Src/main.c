@@ -91,8 +91,21 @@ int main(void)
   MX_GPIO_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
+  /* Out of reset, the Olimexino-STM32F3 board enables a pull-up on the USB_DP line. If
+   * the board already enumerated, then it might stay in that state, even after a reset.
+   * It is therefore best to first make sure the USB device disconnects from the USB
+   * host. This is done by configuring USB DISC (PC12) as a digital output and setting
+   * it logic high. This turns the P-MOSFET off, which disables the pull-up on the USB_DP
+   * line.
+   */
+  LL_GPIO_SetOutputPin(GPIOC, LL_GPIO_PIN_12);
   /* Initialize the bootloader application. */
   AppInit();
+  /* Connect the device to the USB host by setting USB DISC (PC12) low. This turns the
+   * P-MOSFET on, which enables the pull-up on the USB_DP line. This in turns triggers
+   * the USB host to start the enumaration process.
+   */
+  LL_GPIO_ResetOutputPin(GPIOC, LL_GPIO_PIN_12);
   /* USER CODE END 2 */
 
   /* Infinite loop */

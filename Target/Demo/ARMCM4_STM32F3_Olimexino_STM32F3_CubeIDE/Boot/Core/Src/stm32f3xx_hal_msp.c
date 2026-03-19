@@ -218,7 +218,7 @@ void HAL_MspDeInit(void)
   LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* Make sure USB DISC (PC12) stays high to disable the pull-up on the USB D+ line,
-   * needed to place the USB device in the disconnected state. Otherwise a possible
+   * needed to place the USB device in the disconnected state. Otherwise a possibly
    * connected USB host will attempt to enumerate, which will fail because the USB
    * device is not active at this time.
    */
