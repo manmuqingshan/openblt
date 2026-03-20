@@ -131,19 +131,6 @@ extern blt_int8u XcpVerifyKeyHook(blt_int8u resource, blt_int8u *key, blt_int8u 
 
 
 /****************************************************************************************
-* External functions
-****************************************************************************************/
-#if (BOOT_COM_ENABLE == 0)
-/* in case no internally supported communication interface is used, a custom
- * communication module can be added. In order to use the XCP protocol in the custom
- * communication module, this hook function needs to be implemented. If the XCP protocol
- * is not needed, then simply remove the xcp.c source from the project.
- */
-extern void XcpTransmitPacketHook(blt_int8u *data, blt_int16u len);
-#endif
-
-
-/****************************************************************************************
 * Local constants
 ****************************************************************************************/
 /** \brief String buffer with station id. */
@@ -348,12 +335,7 @@ void XcpPacketReceived(blt_int8u *data, blt_int8u len)
 static void XcpTransmitPacket(blt_int8u *data, blt_int16s len)
 {
   /* submit packet to the communication interface for transmission */
-#if (BOOT_COM_ENABLE == 0)
-  XcpTransmitPacketHook(data, len);
-#else
   ComTransmitPacket(data, len);
-#endif
-
 } /*** end of XcpTransmitPacket ***/
 
 

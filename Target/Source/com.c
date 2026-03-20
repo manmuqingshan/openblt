@@ -49,6 +49,31 @@
 
 #if (BOOT_COM_ENABLE > 0)
 /****************************************************************************************
+* Hook functions
+****************************************************************************************/
+#if (BOOT_COM_CUSTOM_ENABLE > 0)
+/* With this set of hook-functions, support for a new XCP communication interface can
+ * be integrated. For example to support firmware updates via RS485 using a custom
+ * packet format. This makes it essentially possible to use any type of communication
+ * interface for firmware updates, as long as you can somehow find a way to embed an
+ * XCP packet inside.
+ *
+ * To enable these hook-functions, add configuration macro BOOT_COM_CUSTOM_ENABLE to
+ * your "blt_conf.h" and set it to a value of 1. Next, add the configuration macros
+ * BOOT_COM_CUSTOM_TX_MAX_DATA and BOOT_COM_CUSTOM_RX_MAX_DATA to configure the maximum
+ * size of XCP packets in bytes for transmitting and receiving, respectively.
+ *
+ * Afterwards implement these hook-functions for your specific custom communication
+ * interface. You can reference the existing ones for an example. E.g. Rs232Xxx().
+ */
+extern void     ComCustomInitHook(void);
+extern void     ComCustomFreeHook(void);
+extern blt_bool ComCustomReceivePacketHook(blt_int8u *data, blt_int8u *len);
+extern void     ComCustomTransmitPacketHook(blt_int8u *data, blt_int8u len);
+#endif
+
+
+/****************************************************************************************
 * Local data declarations
 ****************************************************************************************/
 /** \brief Holds the communication interface of the currently active interface. */
@@ -88,6 +113,12 @@ void ComInit(void)
   UsbInit();
   /* set it as active */
   comActiveInterface = COM_IF_USB;
+#endif
+#if (BOOT_COM_CUSTOM_ENABLE > 0)
+  /* initialize the custom interface */
+  ComCustomInitHook();
+  /* set it as active */
+  comActiveInterface = COM_IF_CUSTOM;
 #endif
 #if (BOOT_COM_NET_ENABLE > 0)
   #if (BOOT_COM_NET_DEFERRED_INIT_ENABLE == 0)
@@ -148,6 +179,15 @@ void ComTask(void)
     XcpPacketReceived(&xcpCtoReqPacket[0], xcpPacketLen);
   }
 #endif
+#if (BOOT_COM_CUSTOM_ENABLE > 0)
+  if (ComCustomReceivePacketHook(&xcpCtoReqPacket[0], &xcpPacketLen) == BLT_TRUE)
+  {
+    /* make this the active interface */
+    comActiveInterface = COM_IF_CUSTOM;
+    /* process packet */
+    XcpPacketReceived(&xcpCtoReqPacket[0], xcpPacketLen);
+  }
+#endif
 #if (BOOT_COM_NET_ENABLE > 0)
   if (NetReceivePacket(&xcpCtoReqPacket[0], &xcpPacketLen) == BLT_TRUE)
   {
@@ -170,6 +210,10 @@ void ComFree(void)
 #if (BOOT_COM_USB_ENABLE > 0)
   /* disconnect the usb device from the usb host */
   UsbFree();
+#endif
+#if (BOOT_COM_CUSTOM_ENABLE > 0)
+  /* free the custom communication interface */
+  ComCustomFreeHook();
 #endif
 } /*** end of ComFree ***/
 
@@ -217,6 +261,13 @@ void ComTransmitPacket(blt_int8u *data, blt_int16u len)
     UsbTransmitPacket(data, len);
   }
 #endif
+#if (BOOT_COM_CUSTOM_ENABLE > 0)
+  /* transmit the packet */
+  if (comActiveInterface == COM_IF_CUSTOM)
+  {
+    ComCustomTransmitPacketHook(data, len);
+  }
+#endif
 #if (BOOT_COM_NET_ENABLE > 0)
   if (comActiveInterface == COM_IF_NET)
   {
@@ -259,6 +310,10 @@ blt_int16u ComGetActiveInterfaceMaxRxLen(void)
       result = BOOT_COM_USB_RX_MAX_DATA;
       break;
 
+    case COM_IF_CUSTOM:
+      result = BOOT_COM_CUSTOM_RX_MAX_DATA;
+      break;
+
     case COM_IF_NET:
       result = BOOT_COM_NET_RX_MAX_DATA;
       break;
@@ -299,6 +354,10 @@ blt_int16u ComGetActiveInterfaceMaxTxLen(void)
 
     case COM_IF_USB:
       result = BOOT_COM_USB_TX_MAX_DATA;
+      break;
+
+    case COM_IF_CUSTOM:
+      result = BOOT_COM_CUSTOM_TX_MAX_DATA;
       break;
 
     case COM_IF_NET:

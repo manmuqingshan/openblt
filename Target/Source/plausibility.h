@@ -113,6 +113,14 @@
 #define BOOT_COM_USB_RX_MAX_DATA       (63)
 #endif
 
+#ifndef BOOT_COM_CUSTOM_TX_MAX_DATA
+#define BOOT_COM_CUSTOM_TX_MAX_DATA    (63)
+#endif
+
+#ifndef BOOT_COM_CUSTOM_RX_MAX_DATA
+#define BOOT_COM_CUSTOM_RX_MAX_DATA    (63)
+#endif
+
 #ifndef BOOT_COM_NET_TX_MAX_DATA
 #define BOOT_COM_NET_TX_MAX_DATA       (129)
 #endif
@@ -361,6 +369,37 @@
 
 #endif /* BOOT_COM_USB_ENABLE > 0 */
 
+#ifndef BOOT_COM_CUSTOM_ENABLE
+#define BOOT_COM_CUSTOM_ENABLE             (0)
+#endif
+
+#if (BOOT_COM_CUSTOM_ENABLE > 0)
+#ifndef BOOT_COM_CUSTOM_TX_MAX_DATA
+#error "BOOT_COM_CUSTOM_TX_MAX_DATA is missing in blt_conf.h"
+#endif
+
+#if (BOOT_COM_CUSTOM_TX_MAX_DATA <= 0)
+#error "BOOT_COM_CUSTOM_TX_MAX_DATA must be > 0"
+#endif
+
+#if (BOOT_COM_CUSTOM_TX_MAX_DATA > 255)
+#error "BOOT_COM_CUSTOM_TX_MAX_DATA must be <= 255"
+#endif
+
+#ifndef BOOT_COM_CUSTOM_RX_MAX_DATA
+#error "BOOT_COM_CUSTOM_RX_MAX_DATA is missing in blt_conf.h"
+#endif
+
+#if (BOOT_COM_CUSTOM_RX_MAX_DATA <= 0)
+#error "BOOT_COM_CUSTOM_RX_MAX_DATA must be > 0"
+#endif
+
+#if (BOOT_COM_CUSTOM_RX_MAX_DATA > 255)
+#error "BOOT_COM_CUSTOM_RX_MAX_DATA must be <= 255"
+#endif
+
+#endif /* BOOT_COM_CUSTOM_ENABLE > 0 */
+
 #ifndef BOOT_COM_NET_ENABLE
 #define BOOT_COM_NET_ENABLE             (0)
 #endif
@@ -482,7 +521,7 @@
 #define BOOT_COM_DEFERRED_INIT_ENABLE       (0)
 #endif
 
-#if (BOOT_COM_CAN_ENABLE == 1) || (BOOT_COM_RS232_ENABLE == 1) || (BOOT_COM_MBRTU_ENABLE == 1) || (BOOT_COM_NET_ENABLE == 1) || (BOOT_COM_USB_ENABLE == 1)
+#if (BOOT_COM_CAN_ENABLE == 1) || (BOOT_COM_RS232_ENABLE == 1) || (BOOT_COM_MBRTU_ENABLE == 1) || (BOOT_COM_NET_ENABLE == 1) || (BOOT_COM_USB_ENABLE == 1) || (BOOT_COM_CUSTOM_ENABLE == 1)
 #define BOOT_COM_ENABLE   (1)
 #else
 #define BOOT_COM_ENABLE   (0)
