@@ -88,6 +88,103 @@
 /** \brief Select the desired UART peripheral as a zero based index. */
 #define BOOT_COM_RS232_CHANNEL_INDEX     (1)
 
+/* The CAN communication interface is selected by setting the BOOT_COM_CAN_ENABLE
+ * configurable to 1. Configurable BOOT_COM_CAN_BAUDRATE selects the communication speed
+ * in bits/second. Two CAN messages are reserved for communication with the host. The
+ * message identifier for sending data from the target to the host is configured with
+ * BOOT_COM_CAN_TXMSG_ID. The one for receiving data from the host is configured with
+ * BOOT_COM_CAN_RXMSG_ID. Note that an extended 29-bit CAN identifier is configured by
+ * OR-ing with mask 0x80000000. To use CAN classic either remove or set macro
+ * BOOT_COM_CAN_FD_ENABLE to 0. To use CAN FD set this macro to 1. To make use of the
+ * CAN FD bitrate switch to communicate the actual data bytes at a higher speed, add
+ * macro BOOT_COM_CAN_FD_BRS_BAUDRATE and configure it to the desired baudrate for the
+ * bitrate switch. It is common for a microcontroller to have more than 1 CAN controller
+ * on board. The zero-based BOOT_COM_CAN_CHANNEL_INDEX selects the CAN controller
+ * channel.
+ */
+/** \brief Enable/disable CAN transport layer. */
+#define BOOT_COM_CAN_ENABLE             (1)
+/** \brief Configure the desired CAN baudrate. */
+#define BOOT_COM_CAN_BAUDRATE           (500000)
+/** \brief Configure CAN message ID target->host. */
+#define BOOT_COM_CAN_TX_MSG_ID          (0x7E1 /*| 0x80000000*/)
+/** \brief Configure CAN message ID host->target. */
+#define BOOT_COM_CAN_RX_MSG_ID          (0x667 /*| 0x80000000*/)
+/** \brief Configure CAN classic (0) or CAN FD (1). */
+#define BOOT_COM_CAN_FD_ENABLE          (0)
+/** \brief Configure the CAN FD data baudrate for the bitrate switch.  */
+#define BOOT_COM_CAN_FD_BRS_BAUDRATE    (2000000)
+/** \brief Select the desired CAN peripheral as a zero based index. */
+#define BOOT_COM_CAN_CHANNEL_INDEX      (0)
+
+/* The USB communication interface is selected by setting the BOOT_COM_USB_ENABLE
+ * configurable to 1.
+ *
+ */
+/** \brief Enable/disable USB transport layer. */
+#define BOOT_COM_USB_ENABLE             (0)
+
+/* The NET communication interface for firmware updates via TCP/IP is selected by setting
+ * the BOOT_COM_NET_ENABLE configurable to 1. The default IP address is configured
+ * with the macros BOOT_COM_NET_IPADDRx. The default netmask is configured with the
+ * macro BOOT_COM_NET_NETMASKx. The default gateway is configured with the macros
+ * BOOT_COM_NET_GATEWAYx. The bootloader acts and a TCP/IP server. The port the server
+ * listen on for connections is configured with BOOT_COM_NET_PORT.
+ * In case the network switch/router supports a DHCP server, you can set configuration
+ * macro BOOT_COM_NET_DHCP_ENABLE to 1 to enable the DHCP client. In this case the
+ * DHCP client handles the automatic IP address assignment. In this case the macros for
+ * configuring the IP address, network mask and gateway address are no longer needed.
+ */
+/** \brief Enable/disable the NET transport layer. */
+#define BOOT_COM_NET_ENABLE               (0)
+/** \brief Configure the port that the TCP/IP server listens on */
+#define BOOT_COM_NET_PORT                 (1000)
+/** \brief Enable/disable DHCP client for automatically obtaining an IP address. */
+#define BOOT_COM_NET_DHCP_ENABLE          (1)
+/** \brief Configure the 1st byte of the IP address */
+#define BOOT_COM_NET_IPADDR0              (192)
+/** \brief Configure the 2nd byte of the IP address */
+#define BOOT_COM_NET_IPADDR1              (168)
+/** \brief Configure the 3rd byte of the IP address */
+#define BOOT_COM_NET_IPADDR2              (178)
+/** \brief Configure the 4th byte of the IP address */
+#define BOOT_COM_NET_IPADDR3              (50)
+/** \brief Configure the 1st byte of the network mask */
+#define BOOT_COM_NET_NETMASK0             (255)
+/** \brief Configure the 2nd byte of the network mask */
+#define BOOT_COM_NET_NETMASK1             (255)
+/** \brief Configure the 3rd byte of the network mask */
+#define BOOT_COM_NET_NETMASK2             (255)
+/** \brief Configure the 4th byte of the network mask */
+#define BOOT_COM_NET_NETMASK3             (0)
+/** \brief Configure the 1st byte of the gateway address */
+#define BOOT_COM_NET_GATEWAY0             (192)
+/** \brief Configure the 2nd byte of the gateway address */
+#define BOOT_COM_NET_GATEWAY1             (168)
+/** \brief Configure the 3rd byte of the gateway address */
+#define BOOT_COM_NET_GATEWAY2             (178)
+/** \brief Configure the 4th byte of the gateway address */
+#define BOOT_COM_NET_GATEWAY3             (1)
+/** \brief Enable/disable the deferred initialization mechanism. When enabled, the
+ *         communication interface is only initialized when: (a) no valid user program
+ *         is detected, or (b) when CpuUserProgramStartHook() returns BLT_FALSE. Your
+ *         bootloader application can explicitly initialize the communication interface
+ *         by calling ComDeferredInit().
+ */
+#define BOOT_COM_NET_DEFERRED_INIT_ENABLE (1)
+
+
+/****************************************************************************************
+*   F I L E   S Y S T E M   I N T E R F A C E   C O N F I G U R A T I O N
+****************************************************************************************/
+/* The file system interface is selected by setting the BOOT_FILE_SYS_ENABLE configurable
+ * to 1. This enables support for firmware updates from a file stored on a locally
+ * attached file system such as an SD-card. Note that this interface can be enabled
+ * together with one of the remote communication interfaces such as UART, CAN or USB.
+ */
+/** \brief Enable/disable support for firmware updates from a locally attached storage.*/
+#define BOOT_FILE_SYS_ENABLE            (0)
+
 
 /****************************************************************************************
 *   B A C K D O O R   E N T R Y   C O N F I G U R A T I O N

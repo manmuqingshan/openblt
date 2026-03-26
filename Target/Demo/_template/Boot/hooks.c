@@ -238,6 +238,109 @@ blt_bool NvmWriteChecksumHook(void)
 
 
 /****************************************************************************************
+*   U S B   C O M M U N I C A T I O N   I N T E R F A C E   H O O K   F U N C T I O N S
+****************************************************************************************/
+
+#if (BOOT_COM_USB_ENABLE > 0)
+/************************************************************************************//**
+** \brief     Callback that gets called whenever the USB device should be connected
+**            to the USB bus.
+** \param     connect BLT_TRUE to connect and BLT_FALSE to disconnect.
+** \return    none.
+**
+****************************************************************************************/
+void UsbConnectHook(blt_bool connect)
+{
+  /* Note that this is handled automatically by the OTG peripheral. */
+} /*** end of UsbConnect ***/
+
+
+/************************************************************************************//**
+** \brief     Callback that gets called whenever the USB host requests the device
+**            to enter a low power mode.
+** \return    none.
+**
+****************************************************************************************/
+void UsbEnterLowPowerModeHook(void)
+{
+  /* support to enter a low power mode can be implemented here */
+} /*** end of UsbEnterLowPowerMode ***/
+
+
+/************************************************************************************//**
+** \brief     Callback that gets called whenever the USB host requests the device to
+**            exit low power mode.
+** \return    none.
+**
+****************************************************************************************/
+void UsbLeaveLowPowerModeHook(void)
+{
+  /* support to leave a low power mode can be implemented here */
+} /*** end of UsbLeaveLowPowerMode ***/
+#endif /* BOOT_COM_USB_ENABLE > 0 */
+
+
+/****************************************************************************************
+*   F I L E   S Y S T E M   I N T E R F A C E   H O O K   F U N C T I O N S
+****************************************************************************************/
+
+#if (BOOT_FILE_SYS_ENABLE > 0)
+/****************************************************************************************
+* Constant data declarations
+****************************************************************************************/
+/** \brief Firmware filename. */
+static const blt_char firmwareFilename[] = "/demoprog_template.srec";
+
+
+/************************************************************************************//**
+** \brief     Callback that gets called to check whether a firmware update from
+**            local file storage should be started. This could for example be when
+**            a switch is pressed, when a certain file is found on the local file
+**            storage, etc.
+** \return    BLT_TRUE if a firmware update is requested, BLT_FALSE otherwise.
+**
+****************************************************************************************/
+blt_bool FileIsFirmwareUpdateRequestedHook(void)
+{
+  FILINFO fileInfoObject = { 0 }; /* needs to be zeroed according to f_stat docs */;
+
+  /* Current example implementation looks for a predetermined firmware file on the
+   * SD-card. If the SD-card is accessible and the firmware file was found the firmware
+   * update is started. When successfully completed, the firmware file is deleted.
+   * During the firmware update, progress information is written to a file called
+   * bootlog.txt and additionally outputted on UART @57600 bps for debugging purposes.
+   */
+  /* check if firmware file is present and SD-card is accessible */
+  if (f_stat(firmwareFilename, &fileInfoObject) == FR_OK)
+  {
+    /* check if the filesize is valid and that it is not a directory */
+    if ( (fileInfoObject.fsize > 0) && (!(fileInfoObject.fattrib & AM_DIR)) )
+    {
+      /* all conditions are met to start a firmware update from local file storage */
+      return BLT_TRUE;
+    }
+  }
+  /* still here so no firmware update request is pending */
+  return BLT_FALSE;
+} /*** end of FileIsFirmwareUpdateRequestedHook ***/
+
+
+/************************************************************************************//**
+** \brief     Callback to obtain the filename of the firmware file that should be
+**            used during the firmware update from the local file storage. This
+**            hook function is called at the beginning of the firmware update from
+**            local storage sequence.
+** \return    valid firmware filename with full path or BLT_NULL.
+**
+****************************************************************************************/
+const blt_char *FileGetFirmwareFilenameHook(void)
+{
+  return firmwareFilename;
+} /*** end of FileGetFirmwareFilenameHook ***/
+#endif /* BOOT_FILE_SYS_ENABLE > 0 */
+
+
+/****************************************************************************************
 *   S E E D / K E Y   S E C U R I T Y   H O O K   F U N C T I O N S
 ****************************************************************************************/
 
