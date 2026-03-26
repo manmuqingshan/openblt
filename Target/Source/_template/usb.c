@@ -30,18 +30,23 @@
 * \defgroup   Target__template_usb USB driver of a port
 * \brief      This module implements the USB driver of a microcontroller port. 
 * \details    The USB driver makes user of bulk communications only, by means of two
-*             endpoints. This driver already implements FIFO buffers for the endpoint
-*             data including utility functions for managing these FIFOs. Note that the
-*             USB descriptor configuration and other enumeration related configuration
-*             is typically stored with the bootloader demo application and is not
-*             implemented in this driver directly. 
-*             Basically, whenever the USB communication stack is available to transmit
-*             new data on the IN-endpoint, function UsbTransmitPipeBulkIN() can be
-*             called, which checks if there is data to transmit in the FIFO buffer and 
-*             then needs to copy it to the IN-endpoint buffer. Whenever the USB 
-*             communication stack signals that new data was received on the OUT-endpoint,
-*             UsbReceivePipeBulkOUT() can be called which then copies the data from the
-*             OUT-endpoint buffer into the FIFO buffer.
+*             endpoints. 
+*
+*             The currect default implementation assumes that the TinyUSB stack is used. 
+*             In this case all that needs to be done is adding the TinyUSB port to 
+*             .\Target\Source\third_party\tinyusb\src\portable. 
+*
+*             Keep in mind that the bootloader runs without interrutps. Therefore the
+*             port offered by TinyUSB needs to be modified. In essence such that it never
+*             enables the interrupts. For an example on how to achieve this, you could
+*             look at:
+*             .\Target\Source\third_party\tinyusb\src\portable\synopsys\dwc2\dcd_dwc2.c.
+*             Search for the text "CFG_TUSB_POLLING_ENABLED".
+* 
+*             Note that the TinyUSB configuration and the USB descriptor are typically
+*             stored with the bootloader demo application and is not implemented in this
+*             driver directly. For an example, you could look at:
+*             .\Target\Demo\ARMCM7_STM32F7_Nucleo_F746ZG_GCC\Boot\lib\TinyUSB\
 * \ingroup    Target__template
 ****************************************************************************************/
 
@@ -51,7 +56,7 @@
 #include "boot.h"                                     /* bootloader generic header     */
 #if (BOOT_COM_USB_ENABLE > 0)
 #include "usb.h"                                      /* USB bootloader driver         */
-/* TODO ##Port Include microcontroller peripheral driver header files here. */
+#include "tusb.h"                                     /* TinyUSB stack                 */
 
 
 /****************************************************************************************
@@ -72,66 +77,20 @@
 
 
 /****************************************************************************************
-* Macro definitions
+* Configuration check
 ****************************************************************************************/
-/** \brief Total number of fifo buffers. */
-#define FIFO_MAX_BUFFERS          (2)
-/** \brief Invalid value for a fifo buffer handle. */
-#define FIFO_ERR_INVALID_HANDLE   (255)
-/** \brief Number of bytes that fit in the fifo pipe. */
-#define FIFO_PIPE_SIZE            (64)
-
-/** \brief Endpoint IN & OUT Packet size. */
-#define BULK_DATA_MAX_PACKET_SIZE (64)
-
-
-/****************************************************************************************
-* Type definitions
-****************************************************************************************/
-/** \brief Structure type for fifo control. */
-typedef struct t_fifo_ctrl
-{
-  blt_int8u          *startptr;                    /**< pointer to start of buffer     */
-  blt_int8u          *endptr;                      /**< pointer to end of buffer       */
-  blt_int8u          *readptr;                     /**< pointer to next read location  */
-  blt_int8u          *writeptr;                    /**< pointer to next free location  */
-  blt_int8u           length;                      /**< number of buffer elements      */
-  blt_int8u           entries;                     /**< # of full buffer elements      */
-  blt_int8u           handle;                      /**< handle of the buffer           */
-  struct t_fifo_ctrl *fifoctrlptr;                 /**< pointer to free buffer control */
-} tFifoCtrl;
-
-/** \brief Structure type for a fifo pipe. */
-typedef struct
-{
-  blt_int8u handle;                                /**< fifo handle                    */
-  blt_int8u data[FIFO_PIPE_SIZE];                  /**< fifo data buffer               */
-} tFifoPipe;                                       /**< USB pipe fifo type             */
+/* The TinyUSB port was modified to support polling mode operation, needed by the 
+ * bootloader. Verify that polling mode was actually enabled in the configuration header.
+ */
+#if (CFG_TUSB_POLLING_ENABLED <= 0)
+#error "CFG_TUSB_POLLING_ENABLED must be > 0"
+#endif
 
 
 /****************************************************************************************
 * Function prototypes
 ****************************************************************************************/
 static blt_bool  UsbReceiveByte(blt_int8u *data);
-static blt_bool  UsbTransmitByte(blt_int8u data);
-static void      UsbFifoMgrInit(void);
-static blt_int8u UsbFifoMgrCreate(blt_int8u *buffer, blt_int8u length);
-static blt_bool  UsbFifoMgrWrite(blt_int8u handle, blt_int8u data);
-static blt_bool  UsbFifoMgrRead(blt_int8u handle, blt_int8u *data);
-static blt_int8u UsbFifoMgrScan(blt_int8u handle);
-
-
-/****************************************************************************************
-* Local data declarations
-****************************************************************************************/
-/** \brief Local variable that holds the fifo control structures. */
-static tFifoCtrl  fifoCtrl[FIFO_MAX_BUFFERS];
-/** \brief Local pointer that points to the next free fifo control structure. */
-static tFifoCtrl *fifoCtrlFree;
-/** \brief Fifo pipe used for the bulk in endpoint. */
-static tFifoPipe  fifoPipeBulkIN;
-/** \brief Fifo pipe used for the bulk out endpoint. */
-static tFifoPipe  fifoPipeBulkOUT;
 
 
 /************************************************************************************//**
@@ -141,19 +100,14 @@ static tFifoPipe  fifoPipeBulkOUT;
 ****************************************************************************************/
 void UsbInit(void)
 {
-  /* initialize the FIFO manager */
-  UsbFifoMgrInit();
-  /* place 2 buffers under FIFO management */
-  fifoPipeBulkIN.handle  = UsbFifoMgrCreate(fifoPipeBulkIN.data,  FIFO_PIPE_SIZE);
-  fifoPipeBulkOUT.handle = UsbFifoMgrCreate(fifoPipeBulkOUT.data, FIFO_PIPE_SIZE);
-  /* validate fifo handles */
-  ASSERT_RT((fifoPipeBulkIN.handle  != FIFO_ERR_INVALID_HANDLE) && \
-            (fifoPipeBulkOUT.handle != FIFO_ERR_INVALID_HANDLE));
-  
-  /* TODO ##Port Initialize the USB communication stack library. */             
+  /* TODO ##Port Make sure to modify the TinyUSB port such that it can run in polling
+   *      mode. This means that it should not enable USB related interrupts. You can make
+   *      use of the macro CFG_TUSB_POLLING_ENABLED to configure at compile-time if
+   *      polling mode should be supported or not by the port.
+   */
 
-  /* inform application about the connect event */
-  UsbConnectHook(BLT_TRUE);
+  /* initialize the TinyUSB device stack on the configured roothub port */
+  tud_init(BOARD_TUD_RHPORT);
   /* extend the time that the backdoor is open in case the default timed backdoor
    * mechanism is used.
    */
@@ -173,10 +127,8 @@ void UsbInit(void)
 ****************************************************************************************/
 void UsbFree(void)
 {
-  /* TODO ##Port Unitialize the USB communication stack library. */             
-
-  /* inform application about the disconnect event */
-  UsbConnectHook(BLT_FALSE);
+  /* disconnect the TinyUSB device stack.*/
+  tud_disconnect();
 } /*** end of UsbFree ***/
 
 
@@ -189,25 +141,19 @@ void UsbFree(void)
 ****************************************************************************************/
 void UsbTransmitPacket(blt_int8u *data, blt_int8u len)
 {
-  blt_int16u data_index;
-  blt_bool result;
+  blt_int32u result;
 
   /* verify validity of the len-paramenter */
   ASSERT_RT(len <= BOOT_COM_USB_TX_MAX_DATA);
 
   /* first transmit the length of the packet */
-  result = UsbTransmitByte(len);
-  ASSERT_RT(result == BLT_TRUE);
-
-  /* transmit all the packet bytes one-by-one */
-  for (data_index = 0; data_index < len; data_index++)
-  {
-    /* keep the watchdog happy */
-    CopService();
-    /* write byte */
-    result = UsbTransmitByte(data[data_index]);
-    ASSERT_RT(result == BLT_TRUE);
-  }
+  result = tud_vendor_write(&len, 1);
+  ASSERT_RT(result == 1);
+  /* next transmit the actual packet bytes */
+  result = tud_vendor_write(data, len);
+  ASSERT_RT(result == len);
+  /* make sure the transmission starts, even if the endpoint buffer is not yet full */
+  tud_vendor_flush();
 } /*** end of UsbTransmitPacket ***/
 
 
@@ -224,9 +170,11 @@ blt_bool UsbReceivePacket(blt_int8u *data, blt_int8u *len)
   static blt_int8u xcpCtoRxLength;
   static blt_bool  xcpCtoRxInProgress = BLT_FALSE;
 
-  /* TODO ##Port Poll USB interrupt flags to process USB related events. This is a good
-   * location for this, since this function is called continuously by the bootloader.
-   */
+  /* poll for USB interrupt flags to process USB releated event and run the USB device
+   * stack task.
+    */
+  tud_int_handler(BOARD_TUD_RHPORT);
+  tud_task();
 
   /* start of cto packet received? */
   if (xcpCtoRxInProgress == BLT_FALSE)
@@ -279,253 +227,71 @@ blt_bool UsbReceivePacket(blt_int8u *data, blt_int8u *len)
 ****************************************************************************************/
 static blt_bool UsbReceiveByte(blt_int8u *data)
 {
-  blt_bool result;
+  blt_bool result = BLT_FALSE;
+  blt_int32u count;
 
-  /* obtain data from the fifo */
-  result = UsbFifoMgrRead(fifoPipeBulkOUT.handle, data);
+  /* USB received data available? */
+  if (tud_vendor_available())
+  {
+    /* read the next byte from the internal USB reception buffer */
+    count = tud_vendor_read(data, 1);
+    /* check read result */
+    if (count == 1)
+    {
+      result = BLT_TRUE;
+    }
+  }
+  /* give the result back to the caller */
   return result;
 } /*** end of UsbReceiveByte ***/
 
 
 /************************************************************************************//**
-** \brief     Transmits a communication interface byte.
-** \param     data Value of byte that is to be transmitted.
-** \return    BLT_TRUE if the byte was transmitted, BLT_FALSE otherwise.
+** \brief     TinyUSB stack callback invoked then the USB device is mounted.
 **
 ****************************************************************************************/
-static blt_bool UsbTransmitByte(blt_int8u data)
+void tud_mount_cb(void)
 {
-  blt_bool result;
-
-  /* write data from to fifo */
-  result = UsbFifoMgrWrite(fifoPipeBulkIN.handle, data);
-  return result;
-} /*** end of UsbTransmitByte ***/
+  /* inform application about the connect event */
+  UsbConnectHook(BLT_TRUE);
+} /*** end of tud_mount_cb ***/
 
 
 /************************************************************************************//**
-** \brief     Checks if there is still data left to transmit and if so submits it
-**            for transmission with the USB endpoint.
-** \return    none.
+** \brief     TinyUSB stack callback invoked then the USB device is unmounted.
 **
 ****************************************************************************************/
-void UsbTransmitPipeBulkIN(void)
+void tud_umount_cb(void)
 {
-  /* USB_Tx_Buffer is static for run-time optimalization */
-  static blt_int8u USB_Tx_Buffer[BULK_DATA_MAX_PACKET_SIZE];
-  blt_int8u nr_of_bytes_for_tx_endpoint;
-  blt_int8u byte_counter;
-  blt_int8u byte_value;
-  blt_bool  result;
-
-  /* read how many bytes should be transmitted */
-  nr_of_bytes_for_tx_endpoint = UsbFifoMgrScan(fifoPipeBulkIN.handle);
-  /* only continue if there is actually data left to transmit */
-  if (nr_of_bytes_for_tx_endpoint == 0)
-  {
-    return;
-  }
-  /* make sure to not transmit more than the USB endpoint can handle */
-  if (nr_of_bytes_for_tx_endpoint > BULK_DATA_MAX_PACKET_SIZE)
-  {
-    nr_of_bytes_for_tx_endpoint = BULK_DATA_MAX_PACKET_SIZE;
-  }
-  /* copy the transmit data to the transmit buffer */
-  for (byte_counter=0; byte_counter < nr_of_bytes_for_tx_endpoint; byte_counter++)
-  {
-    /* obtain data from the fifo */
-    result = UsbFifoMgrRead(fifoPipeBulkIN.handle, &byte_value);
-    ASSERT_RT(result == BLT_TRUE);
-    /* store it in the endpoint's RAM */
-    USB_Tx_Buffer[byte_counter] = byte_value;
-  }
-  /* TODO ##Port Copy data to IN-endpoint's RAM and start the transmission. The data is
-   * located in local array 'USB_Tx_Buffer' and the number of bytes is stored in
-   * 'nr_of_bytes_for_tx_endpoint'
-   */
-} /*** end of UsbTransmitPipeBulkIN ***/
+  /* inform application about the disconnect event */
+  UsbConnectHook(BLT_FALSE);
+} /*** end of tud_mount_cb ***/
 
 
 /************************************************************************************//**
-** \brief     Stores data that was received on the Bulk OUT pipe in the fifo.
-** \return    none.
+** \brief     TinyUSB stack callback invoked then the USB bus is suspended. Within 7ms
+**            the device must draw an average of current less than 2.5 mA from the bus.
+** \param     remote_wakeup_en True if the host allows us to perform a remote wakeup.
 **
 ****************************************************************************************/
-void UsbReceivePipeBulkOUT(void)
+void tud_suspend_cb(bool remote_wakeup_en)
 {
-  blt_int16u USB_Rx_Cnt=0;
-  blt_int8u *usbRxBufferPtr;
-  blt_int16u byte_counter;
-  blt_bool result;
+  (void) remote_wakeup_en;
 
-  /* TODO ##Port Get the number of received bytes and set the pointer to where the 
-   * received bytes are currently located.
-   */
-  usbRxBufferPtr = BLT_NULL;
-  USB_Rx_Cnt = 0;
-
-  /* USB data will be immediately processed, this allows next USB traffic being
-   * NAKed till the end of the USART Xfer
-   */
-  for (byte_counter=0; byte_counter<USB_Rx_Cnt; byte_counter++)
-  {
-    /* add the data to the fifo */
-    result = UsbFifoMgrWrite(fifoPipeBulkOUT.handle, usbRxBufferPtr[byte_counter]);
-    /* verify that the fifo wasn't full */
-    ASSERT_RT(result == BLT_TRUE);
-  }
-  /* TODO ##Port Prepare the OUT endpoint to receive next packet. */
-} /*** end of UsbReceivePipeBulkOUT ***/
+  /* Inform application that the USB entered low power mode. */
+  UsbEnterLowPowerModeHook();
+} /*** end of tud_suspend_cb ***/
 
 
 /************************************************************************************//**
-** \brief     Initializes the fifo manager. Each controlled fifo is assigned a
-**            unique handle, which is the same as its index into fifoCtrl[]. Each
-**            controlled fifo holds a pointer to the next free fifo control.
-**            For the last fifo in fifoCtrl[] this one is set to a null-pointer as
-**            an out of fifo control indicator. Function should be called once
-**            before any of the other fifo management functions are called.
-** \return    none.
+** \brief     TinyUSB stack callback invoked then the USB bus is resumed.
 **
 ****************************************************************************************/
-static void UsbFifoMgrInit(void)
+void tud_resume_cb(void)
 {
-  blt_int8u i;
-  tFifoCtrl *pbc1, *pbc2;
-
-  pbc1 = &fifoCtrl[0];
-  pbc2 = &fifoCtrl[1];
-  /* assign fifo handles and pointer to next free fifo */
-  for (i = 0; i < (FIFO_MAX_BUFFERS - 1); i++)
-  {
-    pbc1->handle = i;
-    pbc1->fifoctrlptr = pbc2;
-    pbc1++;
-    pbc2++;
-  }
-  /* initialize handle for the last one and use null-pointer for the next free fifo  */
-  pbc1->handle = i;
-  pbc1->fifoctrlptr = (tFifoCtrl *)0;
-  fifoCtrlFree = &fifoCtrl[0];
-} /*** end of UsbFifoMgrInit ***/
-
-
-/************************************************************************************//**
-** \brief     Places a data storage array under fifo management control. A handle
-**            for identifying the fifo in subsequent fifo management function
-**            calls is returned, if successful.
-** \param     buffer Pointer to the first element in the data storage fifo.
-** \param     length Maximum number of data elements that can be stored in the fifo.
-** \return    Fifo handle if successfull, or FIFO_ERR_INVALID_HANDLE.
-**
-****************************************************************************************/
-static blt_int8u UsbFifoMgrCreate(blt_int8u *buffer, blt_int8u length)
-{
-  tFifoCtrl *pbc;
-
-  /* first determine if these is still a free fifo control available */
-  if (fifoCtrlFree == (tFifoCtrl *)0)
-  {
-    return FIFO_ERR_INVALID_HANDLE;
-  }
-  /* store pointer to free fifo and update pointer to next free one */
-  pbc = fifoCtrlFree;
-  fifoCtrlFree = pbc->fifoctrlptr;
-
-  /* initialize the buffer control */
-  pbc->length = length;
-  pbc->readptr = buffer;
-  pbc->writeptr = buffer;
-  pbc->entries = 0;
-  pbc->startptr = buffer;
-  pbc->endptr = (blt_int8u *)(buffer + length - 1);
-
-  /* return the handle to the successfully created fifo control */
-  return pbc->handle;
-} /*** end of UsbFifoMgrCreate ***/
-
-
-/************************************************************************************//**
-** \brief     Stores data in the fifo.
-** \param     handle Identifies the fifo to write data to.
-** \param     data   Pointer to the data that is to be written to the fifo.
-** \return    BLT_TRUE if the data was successfully stored in the fifo, BLT_FALSE
-**            otherwise.
-**
-****************************************************************************************/
-static blt_bool UsbFifoMgrWrite(blt_int8u handle, blt_int8u data)
-{
-  /* check the validity of the handle parameter */
-  ASSERT_RT(handle < FIFO_MAX_BUFFERS);
-  /* check if fifo is full */
-  if (fifoCtrl[handle].entries == fifoCtrl[handle].length)
-  {
-    return BLT_FALSE;
-  }
-  /* copy data to fifo */
-  *fifoCtrl[handle].writeptr = data;
-  /* data written so update number of entries */
-  fifoCtrl[handle].entries++;
-  /* update write pointer */
-  fifoCtrl[handle].writeptr++;
-  /* check end of fifo */
-  if (fifoCtrl[handle].writeptr > fifoCtrl[handle].endptr)
-  {
-    /* set write pointer to start of the cyclic fifo */
-    fifoCtrl[handle].writeptr = fifoCtrl[handle].startptr;
-  }
-  /* still here so all is okay */
-  return BLT_TRUE;
-} /*** end of UsbFifoMgrWrite ***/
-
-
-/************************************************************************************//**
-** \brief     Retrieves data from the fifo.
-** \param     handle Identifies the fifo to read data from.
-** \param     data   Pointer to where the read data is to be stored.
-** \return    BLT_TRUE if the data was successfully read from the fifo, BLT_FALSE
-**            otherwise.
-**
-****************************************************************************************/
-static blt_bool UsbFifoMgrRead(blt_int8u handle, blt_int8u *data)
-{
-  /* check the validity of the handle parameter */
-  ASSERT_RT(handle < FIFO_MAX_BUFFERS);
-  /* check if fifo is empty */
-  if (fifoCtrl[handle].entries == 0)
-  {
-    return BLT_FALSE;
-  }
-  /* read the data */
-  *data = *fifoCtrl[handle].readptr;
-  /* data read so update number of entries */
-  fifoCtrl[handle].entries--;
-  /* update read pointer */
-  fifoCtrl[handle].readptr++;
-  /* check end of fifo */
-  if (fifoCtrl[handle].readptr > fifoCtrl[handle].endptr)
-  {
-    /* set read pointer to start of the cyclic fifo */
-    fifoCtrl[handle].readptr = fifoCtrl[handle].startptr;
-  }
-  /* still here so all is good */
-  return BLT_TRUE;
-} /*** end of UsbFifoMgrRead ***/
-
-
-/************************************************************************************//**
-** \brief     Returns the number of data entries currently present in the fifo.
-** \param     handle Identifies the fifo that is to be scanned.
-** \return    Number of data entries in the fifo if successful, otherwise 0.
-**
-****************************************************************************************/
-static blt_int8u UsbFifoMgrScan(blt_int8u handle)
-{
-  /* check the validity of the handle parameter */
-  ASSERT_RT(handle < FIFO_MAX_BUFFERS);
-  /* read and return the number of data entries */
-  return fifoCtrl[handle].entries;
-} /*** end of UsbFifoMgrScan ***/
+  /* Inform application that the USB left low power mode. */
+  UsbLeaveLowPowerModeHook();
+} /*** end of tud_resume_cb ***/
 #endif /* BOOT_COM_USB_ENABLE > 0 */
 
 
