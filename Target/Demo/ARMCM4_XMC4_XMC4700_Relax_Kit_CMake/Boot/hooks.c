@@ -362,6 +362,7 @@ void EventsHook(tEventsId id, void const *info)
   blt_int32u       num_bytes;
   blt_int8u        progress;
   blt_char const * filename;
+  blt_int8u        node_id;
   tEventsErrorId   error_id;
   static blt_bool  update_from_file = BLT_FALSE;
 
@@ -393,11 +394,16 @@ void EventsHook(tEventsId id, void const *info)
     case EVENT_ID_ON_START:
       update_from_file = BLT_FALSE;
       filename = ((tEventsInfoStart const *)info)->filename;
+      node_id = ((tEventsInfoStart const *)info)->node_id;
       SEGGER_RTT_WriteString(0, "Firmware update started");
       if (filename != BLT_NULL)
       {
         SEGGER_RTT_printf(0, " (%s)", filename);
         update_from_file = BLT_TRUE;
+      }
+      else
+      {
+        SEGGER_RTT_printf(0, " (%d)", node_id);
       }
       SEGGER_RTT_WriteString(0, ".\n");
       break;
