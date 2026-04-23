@@ -46,6 +46,7 @@ typedef struct
   blt_int8u  ctoPending;                            /**< cto transmission pending flag */
   blt_int16s ctoLen;                                /**< cto current packet length     */
   blt_int32u mta;                                   /**< memory transfer address       */
+  blt_int8u  node_id;                               /**> node id from connection mode  */
 } tXcpInfo;
 
 
@@ -570,6 +571,9 @@ static void XcpCmdConnect(blt_int8u *data)
 
   /* indicate that the connection is established */
   xcpInfo.connected = 1;
+
+  /* read the connection mode parameter and store it as the node identifier */
+  xcpInfo.node_id = data[1];
 
   /* set packet id to command response packet */
   xcpInfo.ctoData[0] = XCP_PID_RES;
@@ -1339,7 +1343,7 @@ static void XcpCmdProgramStart(blt_int8u *data)
    */
   eventsInfoStart.type = EVENT_START_TYPE_NORMAL;
   eventsInfoStart.filename = BLT_NULL;
-  eventsInfoStart.node_id = 0;
+  eventsInfoStart.node_id = xcpInfo.node_id;
   EventsProcess(EVENT_ID_ON_START, &eventsInfoStart);
 #endif
 } /*** end of XcpCmdProgramStart ***/
