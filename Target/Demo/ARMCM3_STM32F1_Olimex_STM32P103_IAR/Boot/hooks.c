@@ -355,7 +355,6 @@ void EventsHook(tEventsId id, void const *info)
         /* Set flag to indicate this is a firmware update from a local file system. */
         update_from_file = BLT_TRUE;
         /* Create or overwrite the logfile. */
-        logFile.canUse = BLT_FALSE;
         if (f_open(&logFile.handle, "/bootlog.txt", FA_CREATE_ALWAYS | FA_WRITE) == FR_OK)
         {
           logFile.canUse = BLT_TRUE;
