@@ -312,6 +312,7 @@ void EventsHook(tEventsId id, void const *info)
   blt_int32u       num_bytes;
   blt_int8u        progress;
   blt_char const * filename;
+  blt_int8u        node_id;
   tEventsErrorId   error_id;
   static blt_bool  update_from_file = BLT_FALSE;
 
@@ -319,21 +320,23 @@ void EventsHook(tEventsId id, void const *info)
   switch (id)
   {
     /* Event EVENT_ID_ON_ENTRY triggers once after a power-on or reset event, when the
-     * bootloader finished it's initialization.
+     * bootloader finished its initialization.
      */
     case EVENT_ID_ON_ENTRY:
       break;
 
     /* Event EVENT_ID_ON_START triggers at the start of a firmware update. Info
-     * parameter:
+     * parameters:
      *  filename: The filename for the firmware updates. Only applicable for firmware
      *            updates from a locally attached FAT filesystem (e.g. SD-card). For
      *            firmware updates via a communication interface (e.g. RS232, CAN, etc.)
      *            the parameter value is BLT_NULL.
+     *  node_id:  8-bit node identifier of the node targeted for the firmware update. 
      */
     case EVENT_ID_ON_START:
       update_from_file = BLT_FALSE;
       filename = ((tEventsInfoStart const *)info)->filename;
+      node_id  = ((tEventsInfoStart const *)info)->node_id;
       if (filename != BLT_NULL)
       {
         update_from_file = BLT_TRUE;
@@ -341,7 +344,7 @@ void EventsHook(tEventsId id, void const *info)
       break;
 
     /* Event EVENT_ID_ON_ERASE triggers each time when a part of non-volatile memory is
-     * about to be erase. Info parameters:
+     * about to be erased. Info parameters:
      *   base_addr: The start memory address of the erase operation.
      *   num_bytes: The number of bytes that are to be erased, starting at base_addr.
      */
@@ -376,7 +379,6 @@ void EventsHook(tEventsId id, void const *info)
     case EVENT_ID_ON_ERROR:
       error_id = ((tEventsInfoError const *)info)->error_id;
       break;
-
 
     /* Event EVENT_ID_ON_SUPPRESS triggers when the bootloader intended to start the
      * user program, yet decided against it. This can for example happen when the
