@@ -62,6 +62,7 @@ namespace ConsoleApp
             sessionSettings.timeoutT7 = 2000;
             sessionSettings.seedKeyFile = "";
             sessionSettings.connectMode = 0;
+            sessionSettings.bypassFirmwareStart = 0;
 
             OpenBLT.Lib.Session.TransportSettingsXcpV10Rs232 transportSettingsRs232;
             transportSettingsRs232.portName = "COM14";

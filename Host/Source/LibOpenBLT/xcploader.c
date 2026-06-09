@@ -46,6 +46,7 @@
 ****************************************************************************************/
 /* XCP command codes as defined by the protocol currently supported by this module */
 #define XCPLOADER_CMD_CONNECT         (0xFFu)    /**< XCP connect command code.        */
+#define XCPLOADER_CMD_DISCONNECT      (0xFEu)    /**< XCP disconnect command code.     */
 #define XCPLOADER_CMD_GET_STATUS      (0xFDu)    /**< XCP get status command code.     */
 #define XCPLOADER_CMD_GET_SEED        (0xF8u)    /**< XCP get seed command code.       */
 #define XCPLOADER_CMD_UNLOCK          (0xF7u)    /**< XCP unlock command code.         */
@@ -95,6 +96,7 @@ static uint32_t XcpLoaderGetOrderedLong(uint8_t const * data);
 static uint16_t XcpLoaderGetOrderedWord(uint8_t const * data);
 /* XCP command functions. */
 static bool XcpLoaderSendCmdConnect(void);
+static bool XcpLoaderSendCmdDisconnect(void);
 static bool XcpLoaderSendCmdGetStatus(uint8_t * session, uint8_t * protectedResources,
                                       uint16_t * configId);
 static bool XcpLoaderSendCmdGetSeed(uint8_t resource, uint8_t mode, uint8_t * seed, uint8_t * seedLen);
@@ -190,6 +192,7 @@ static void XcpLoaderInit(void const * settings)
   xcpSettings.timeoutT6 = 50;
   xcpSettings.timeoutT7 = 2000;
   xcpSettings.connectMode = 0;
+  xcpSettings.bypassFirmwareStart = false;
   xcpSettings.seedKeyFile = NULL;
   xcpSettings.transport = NULL;
   xcpSettings.transportSettings = NULL;
@@ -266,6 +269,7 @@ static void XcpLoaderTerminate(void)
   xcpSettings.timeoutT6 = 50;
   xcpSettings.timeoutT7 = 2000;
   xcpSettings.connectMode = 0;
+  xcpSettings.bypassFirmwareStart = false;
   xcpSettings.seedKeyFile = NULL;
   xcpSettings.transport = NULL;
   xcpSettings.transportSettings = NULL;
@@ -476,10 +480,22 @@ static void XcpLoaderStop(void)
     /* End the programming session by sending the program command with size 0. */
     if (XcpLoaderSendCmdProgram(0, NULL))
     {
-      /* Disconnect the target. Here the reset command is used instead of the disconnect
-       * command, because the bootloader should start the user program on the target.
-       */
-      (void)XcpLoaderSendCmdProgramReset();
+      /* Should the firmware start be bypassed? */
+      if (xcpSettings.bypassFirmwareStart)
+      {
+        /* Use the disconnect command, which keeps the bootloader running and does not
+         * start the user program.
+         */
+        (void)XcpLoaderSendCmdDisconnect();
+      }
+      /* Okay to start the user program after the firmware update. */
+      else
+      {
+        /* Use the reset command instead of the disconnect command, because the
+         * bootloader should start the user program on the target.
+         */
+        (void)XcpLoaderSendCmdProgramReset();
+      }
     }
     /* Disconnect the transport layer. */
     xcpSettings.transport->Disconnect();
@@ -1064,6 +1080,51 @@ static bool XcpLoaderSendCmdConnect(void)
   /* Give the result back to the caller. */
   return result;
 } /*** end of XcpLoaderSendCmdConnect ***/
+
+
+/************************************************************************************//**
+** \brief     Sends the XCP Disconnect command.
+** \return    True if successful, false otherwise.
+**
+****************************************************************************************/
+static bool XcpLoaderSendCmdDisconnect(void)
+{
+  bool result = false;
+  tXcpTransportPacket cmdPacket;
+  tXcpTransportPacket resPacket;
+
+  /* Make sure a valid transport layer is linked. */
+  assert(xcpSettings.transport != NULL);
+
+  /* Only continue with a valid transport layer. */
+  if (xcpSettings.transport != NULL) /*lint !e774 */
+  {
+    /* Init the result value to okay and only set it to error when a problem occurred. */
+    result = true;
+    /* Prepare the command packet. */
+    cmdPacket.data[0] = XCPLOADER_CMD_DISCONNECT;
+    cmdPacket.len = 1;
+    /* Send the packet. */
+    if (!xcpSettings.transport->SendPacket(&cmdPacket, &resPacket,
+        xcpSettings.timeoutT1))
+    {
+      /* Could not send packet or receive response within the specified timeout. */
+      result = false;
+    }
+    /* Only continue if a response was received. */
+    if (result)
+    {
+      /* Check if the response was valid. */
+      if ((resPacket.len != 1) || (resPacket.data[0] != XCPLOADER_CMD_PID_RES))
+      {
+        /* Not a valid or positive response. */
+        result = false;
+      }
+    }
+  }
+  /* Give the result back to the caller. */
+  return result;
+} /*** end of XcpLoaderSendCmdDisonnect ***/
 
 
 /************************************************************************************//**

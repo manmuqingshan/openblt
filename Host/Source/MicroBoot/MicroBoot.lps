@@ -3,14 +3,14 @@
   <ProjectSession>
     <Version Value="12"/>
     <BuildModes Active="Release"/>
-    <Units Count="34">
+    <Units Count="36">
       <Unit0>
         <Filename Value="MicroBoot.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="9"/>
         <CursorPos X="40" Y="47"/>
-        <UsageCount Value="95"/>
+        <UsageCount Value="96"/>
       </Unit0>
       <Unit1>
         <Filename Value="mainunit.pas"/>
@@ -19,8 +19,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="MainUnit"/>
-        <TopLine Value="236"/>
-        <CursorPos X="55" Y="254"/>
+        <TopLine Value="311"/>
+        <CursorPos X="65" Y="334"/>
         <ExtraEditorCount Value="1"/>
         <ExtraEditor1>
           <EditorIndex Value="-1"/>
@@ -28,7 +28,7 @@
           <TopLine Value="377"/>
           <CursorPos Y="394"/>
         </ExtraEditor1>
-        <UsageCount Value="95"/>
+        <UsageCount Value="96"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
@@ -36,35 +36,36 @@
         <Filename Value="../LibOpenBLT/bindings/pascal/openblt.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="OpenBlt"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="104"/>
-        <CursorPos X="29" Y="113"/>
-        <UsageCount Value="95"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="89"/>
+        <CursorPos X="28" Y="97"/>
+        <UsageCount Value="96"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="currentconfig.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="CurrentConfig"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="211"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="51"/>
         <CursorPos X="28" Y="125"/>
-        <UsageCount Value="95"/>
+        <UsageCount Value="96"/>
+        <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="configgroups.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="ConfigGroups"/>
-        <EditorIndex Value="5"/>
-        <TopLine Value="773"/>
-        <CursorPos X="65" Y="830"/>
+        <EditorIndex Value="7"/>
+        <TopLine Value="313"/>
+        <CursorPos X="4" Y="331"/>
         <ExtraEditorCount Value="1"/>
         <ExtraEditor1>
           <EditorIndex Value="-1"/>
           <TopLine Value="646"/>
           <CursorPos X="51" Y="678"/>
         </ExtraEditor1>
-        <UsageCount Value="92"/>
+        <UsageCount Value="93"/>
         <Loaded Value="True"/>
       </Unit4>
       <Unit5>
@@ -74,10 +75,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="SettingsDialog"/>
-        <EditorIndex Value="4"/>
-        <TopLine Value="164"/>
-        <CursorPos X="23" Y="185"/>
-        <UsageCount Value="87"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="275"/>
+        <CursorPos X="24" Y="267"/>
+        <UsageCount Value="88"/>
         <Loaded Value="True"/>
       </Unit5>
       <Unit6>
@@ -90,7 +91,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="226"/>
         <CursorPos X="52" Y="230"/>
-        <UsageCount Value="84"/>
+        <UsageCount Value="85"/>
       </Unit6>
       <Unit7>
         <Filename Value="customutil.pas"/>
@@ -99,7 +100,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="51"/>
         <CursorPos X="28" Y="76"/>
-        <UsageCount Value="77"/>
+        <UsageCount Value="78"/>
       </Unit7>
       <Unit8>
         <Filename Value="transportxcprs232dialog.pas"/>
@@ -111,7 +112,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="155"/>
         <CursorPos X="25" Y="170"/>
-        <UsageCount Value="70"/>
+        <UsageCount Value="71"/>
       </Unit8>
       <Unit9>
         <Filename Value="transportxcpcandialog.pas"/>
@@ -120,11 +121,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TransportXcpCanDialog"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="4"/>
         <TopLine Value="110"/>
         <CursorPos X="85" Y="137"/>
-        <UsageCount Value="70"/>
+        <UsageCount Value="71"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit9>
@@ -138,7 +138,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="25"/>
         <CursorPos X="55" Y="34"/>
-        <UsageCount Value="70"/>
+        <UsageCount Value="71"/>
       </Unit10>
       <Unit11>
         <Filename Value="transportxcptcpipdialog.pas"/>
@@ -150,7 +150,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="26"/>
         <CursorPos Y="49"/>
-        <UsageCount Value="69"/>
+        <UsageCount Value="70"/>
       </Unit11>
       <Unit12>
         <Filename Value="miscellaneousdialog.pas"/>
@@ -159,19 +159,22 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="MiscellaneousDialog"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="203"/>
-        <CursorPos X="45" Y="209"/>
-        <UsageCount Value="59"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="180"/>
+        <CursorPos X="57" Y="194"/>
+        <UsageCount Value="60"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit12>
       <Unit13>
         <Filename Value="firmwareupdate.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="FirmwareUpdate"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="1135"/>
-        <CursorPos X="27" Y="1145"/>
-        <UsageCount Value="57"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="1013"/>
+        <CursorPos X="59" Y="1033"/>
+        <UsageCount Value="58"/>
         <Loaded Value="True"/>
       </Unit13>
       <Unit14>
@@ -181,7 +184,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="57"/>
         <CursorPos Y="67"/>
-        <UsageCount Value="35"/>
+        <UsageCount Value="36"/>
       </Unit14>
       <Unit15>
         <Filename Value="filelogger.pas"/>
@@ -190,7 +193,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="134"/>
         <CursorPos X="19" Y="140"/>
-        <UsageCount Value="32"/>
+        <UsageCount Value="33"/>
       </Unit15>
       <Unit16>
         <Filename Value="transportxcpmbrtudialog.pas"/>
@@ -202,7 +205,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="111"/>
         <CursorPos X="53" Y="113"/>
-        <UsageCount Value="28"/>
+        <UsageCount Value="29"/>
       </Unit16>
       <Unit17>
         <Filename Value="/usr/share/fpcsrc/3.0.0/rtl/objpas/sysutils/osutilsh.inc"/>
@@ -323,6 +326,21 @@
         <CursorPos X="51" Y="1073"/>
         <UsageCount Value="10"/>
       </Unit33>
+      <Unit34>
+        <Filename Value="../../../../../../Users/Frank Voorburg/Desktop/Projects/OpenBLT/tickets/1548_1904_bypass_firmware_start/from_bitcycle/Source/MicroBoot/miscellaneousdialog.lfm"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="LFM"/>
+      </Unit34>
+      <Unit35>
+        <Filename Value="../../../../../../Users/Frank Voorburg/Desktop/Projects/OpenBLT/tickets/1548_1904_bypass_firmware_start/from_bitcycle/Source/MicroBoot/miscellaneousdialog.pas"/>
+        <ComponentName Value="MiscellaneousForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="MiscellaneousDialog"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit35>
     </Units>
     <OtherDefines Count="1">
       <Define0 Value="UseCThreads"/>
@@ -330,122 +348,123 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="transportxcpcandialog.pas"/>
+        <Caret Line="180" Column="47" TopLine="144"/>
       </Position1>
       <Position2>
         <Filename Value="transportxcpcandialog.pas"/>
-        <Caret Line="55" Column="87" TopLine="19"/>
+        <Caret Line="182" Column="45" TopLine="146"/>
       </Position2>
       <Position3>
         <Filename Value="transportxcpcandialog.pas"/>
-        <Caret Line="119" Column="56" TopLine="89"/>
+        <Caret Line="251" Column="44" TopLine="215"/>
       </Position3>
       <Position4>
         <Filename Value="transportxcpcandialog.pas"/>
-        <Caret Line="165" Column="42" TopLine="129"/>
+        <Caret Line="361" Column="54" TopLine="325"/>
       </Position4>
       <Position5>
         <Filename Value="transportxcpcandialog.pas"/>
-        <Caret Line="167" Column="45" TopLine="131"/>
+        <Caret Line="363" Column="60" TopLine="327"/>
       </Position5>
       <Position6>
         <Filename Value="transportxcpcandialog.pas"/>
-        <Caret Line="236" Column="44" TopLine="200"/>
+        <Caret Line="368" Column="48" TopLine="333"/>
       </Position6>
       <Position7>
         <Filename Value="transportxcpcandialog.pas"/>
-        <Caret Line="346" Column="54" TopLine="310"/>
+        <Caret Line="425" Column="56" TopLine="389"/>
       </Position7>
       <Position8>
         <Filename Value="transportxcpcandialog.pas"/>
-        <Caret Line="348" Column="60" TopLine="312"/>
+        <Caret Line="426" Column="55" TopLine="390"/>
       </Position8>
       <Position9>
         <Filename Value="transportxcpcandialog.pas"/>
-        <Caret Line="408" Column="56" TopLine="372"/>
+        <Caret Line="428" Column="58" TopLine="392"/>
       </Position9>
       <Position10>
         <Filename Value="transportxcpcandialog.pas"/>
-        <Caret Line="409" Column="55" TopLine="373"/>
+        <Caret Line="108" Column="27" TopLine="98"/>
       </Position10>
       <Position11>
         <Filename Value="transportxcpcandialog.pas"/>
-        <Caret Line="411" Column="58" TopLine="375"/>
+        <Caret Line="137" Column="23" TopLine="125"/>
       </Position11>
       <Position12>
         <Filename Value="transportxcpcandialog.pas"/>
-        <Caret Line="104" Column="22" TopLine="92"/>
+        <Caret Line="184" Column="47" TopLine="161"/>
       </Position12>
       <Position13>
         <Filename Value="transportxcpcandialog.pas"/>
-        <Caret Line="267" Column="57" TopLine="231"/>
+        <Caret Line="186" Column="45" TopLine="161"/>
       </Position13>
       <Position14>
         <Filename Value="transportxcpcandialog.pas"/>
-        <Caret Line="269" Column="64" TopLine="233"/>
+        <Caret Line="255" Column="44" TopLine="219"/>
       </Position14>
       <Position15>
-        <Filename Value="transportxcpcandialog.pas"/>
-        <Caret Line="270" Column="67" TopLine="234"/>
+        <Filename Value="configgroups.pas"/>
+        <Caret Line="64" Column="23" TopLine="55"/>
       </Position15>
       <Position16>
-        <Filename Value="transportxcpcandialog.pas"/>
-        <Caret Line="134" Column="23" TopLine="115"/>
+        <Filename Value="configgroups.pas"/>
+        <Caret Line="367" Column="31" TopLine="346"/>
       </Position16>
       <Position17>
-        <Filename Value="transportxcpcandialog.pas"/>
-        <Caret Line="180" Column="47" TopLine="144"/>
+        <Filename Value="settingsdialog.pas"/>
+        <Caret Line="152" Column="29" TopLine="123"/>
       </Position17>
       <Position18>
-        <Filename Value="transportxcpcandialog.pas"/>
-        <Caret Line="182" Column="45" TopLine="146"/>
+        <Filename Value="mainunit.pas"/>
+        <Caret Line="166" Column="27" TopLine="145"/>
       </Position18>
       <Position19>
-        <Filename Value="transportxcpcandialog.pas"/>
-        <Caret Line="251" Column="44" TopLine="215"/>
+        <Filename Value="mainunit.pas"/>
+        <Caret Line="315" Column="24" TopLine="315"/>
       </Position19>
       <Position20>
-        <Filename Value="transportxcpcandialog.pas"/>
-        <Caret Line="361" Column="54" TopLine="325"/>
+        <Filename Value="miscellaneousdialog.pas"/>
+        <Caret Line="63" Column="52" TopLine="44"/>
       </Position20>
       <Position21>
-        <Filename Value="transportxcpcandialog.pas"/>
-        <Caret Line="363" Column="60" TopLine="327"/>
+        <Filename Value="miscellaneousdialog.pas"/>
+        <Caret Line="72" TopLine="55"/>
       </Position21>
       <Position22>
-        <Filename Value="transportxcpcandialog.pas"/>
-        <Caret Line="368" Column="48" TopLine="333"/>
+        <Filename Value="configgroups.pas"/>
+        <Caret Line="352" TopLine="340"/>
       </Position22>
       <Position23>
-        <Filename Value="transportxcpcandialog.pas"/>
-        <Caret Line="425" Column="56" TopLine="389"/>
+        <Filename Value="miscellaneousdialog.pas"/>
+        <Caret Line="208" TopLine="180"/>
       </Position23>
       <Position24>
-        <Filename Value="transportxcpcandialog.pas"/>
-        <Caret Line="426" Column="55" TopLine="390"/>
+        <Filename Value="configgroups.pas"/>
+        <Caret Line="331" Column="4" TopLine="313"/>
       </Position24>
       <Position25>
-        <Filename Value="transportxcpcandialog.pas"/>
-        <Caret Line="428" Column="58" TopLine="392"/>
+        <Filename Value="../LibOpenBLT/bindings/pascal/openblt.pas"/>
+        <Caret Line="97" Column="28" TopLine="89"/>
       </Position25>
       <Position26>
-        <Filename Value="transportxcpcandialog.pas"/>
-        <Caret Line="108" Column="27" TopLine="98"/>
+        <Filename Value="firmwareupdate.pas"/>
+        <Caret Line="859" TopLine="832"/>
       </Position26>
       <Position27>
-        <Filename Value="transportxcpcandialog.pas"/>
-        <Caret Line="137" Column="23" TopLine="125"/>
+        <Filename Value="firmwareupdate.pas"/>
+        <Caret Line="835" Column="54" TopLine="828"/>
       </Position27>
       <Position28>
-        <Filename Value="transportxcpcandialog.pas"/>
-        <Caret Line="184" Column="47" TopLine="161"/>
+        <Filename Value="firmwareupdate.pas"/>
+        <Caret Line="993" Column="11" TopLine="980"/>
       </Position28>
       <Position29>
-        <Filename Value="transportxcpcandialog.pas"/>
-        <Caret Line="186" Column="45" TopLine="161"/>
+        <Filename Value="firmwareupdate.pas"/>
+        <Caret Line="837" Column="69" TopLine="824"/>
       </Position29>
       <Position30>
-        <Filename Value="transportxcpcandialog.pas"/>
-        <Caret Line="255" Column="44" TopLine="219"/>
+        <Filename Value="firmwareupdate.pas"/>
+        <Caret Line="1016" Column="57" TopLine="1001"/>
       </Position30>
     </JumpHistory>
     <RunParams>

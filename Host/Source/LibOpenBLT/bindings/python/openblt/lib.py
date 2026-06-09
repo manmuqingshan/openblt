@@ -849,6 +849,7 @@ class BltSessionSettingsXcpV10:
         self.timeoutT7 = 2000         # Busy wait timer timeout in milliseconds.
         self.seedKeyFile = ''         # Seed/key algorithm library filename.
         self.connectMode = 0          # Connection mode parameter in XCP connect command.
+        self.bypassFirmwareStart = 0  # Keep the bootloader running after the update.
 
 
 class BltTransportSettingsXcpV10Rs232:
@@ -973,6 +974,7 @@ def session_init(session_type, session_settings, transport_type, transport_setti
         session_settings.timeoutT7 = 2000
         session_settings.seedKeyFile = ''
         session_settings.connectMode = 0
+        session_settings.bypassFirmwareStart = 0
         transport_type = openblt.BLT_TRANSPORT_XCP_V10_RS232
         transport_settings = openblt.BltTransportSettingsXcpV10Rs232()
         transport_settings.portName = '/dev/ttyACM0'
@@ -992,7 +994,8 @@ def session_init(session_type, session_settings, transport_type, transport_setti
                     ('timeoutT6',   ctypes.c_uint16),
                     ('timeoutT7',   ctypes.c_uint16),
                     ('seedKeyFile', ctypes.c_char_p),
-                    ('connectMode', ctypes.c_uint8)]
+                    ('connectMode', ctypes.c_uint8),
+                    ('bypassFirmwareStart', ctypes.c_uint8)]
 
     class struct_t_blt_transport_settings_xcp_v10_rs232(ctypes.Structure):
         """
@@ -1045,6 +1048,8 @@ def session_init(session_type, session_settings, transport_type, transport_setti
             ctypes.c_char_p(session_settings.seedKeyFile.encode('utf-8'))
         session_settings_struct.connectMode = \
             ctypes.c_uint8(session_settings.connectMode)
+        session_settings_struct.bypassFirmwareStart = \
+            ctypes.c_uint8(session_settings.bypassFirmwareStart)
 
     # Convert transport settings to the correct c-types structure.
     transport_settings_struct = None

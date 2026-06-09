@@ -652,6 +652,8 @@ static void DisplayProgramUsage(void)
   printf("Program settings:\n");
   printf("  -sm              Silent mode switch. When specified, only minimal\n");
   printf("                   information is written to the output (Optional).\n");
+  printf("  -ns              Bypass the starting of the newly programmed firmware\n");
+  printf("                   when the firmware update completes (Optional).\n");
   printf("\n");
   printf("Note that it is not necessary to specify an option if its default value\n");
   printf("is already the desired value.\n");
@@ -714,6 +716,15 @@ static void DisplaySessionInfo(uint32_t sessionType, void const * sessionSetting
           printf("None\n");
         }
         printf("  -> Connection mode: %hhu\n", xcpSettings->connectMode);
+        printf("  -> Bypass firmware start: ");
+        if (xcpSettings->bypassFirmwareStart)
+        {
+          printf("Yes\n");
+        }
+        else
+        {
+          printf("No\n");
+        }
       }
       break;
     }
@@ -1123,6 +1134,7 @@ static void * ExtractSessionSettingsFromCommandLine(int argc, char const * const
           xcpSettings->timeoutT7 = 2000;
           xcpSettings->seedKeyFile = NULL;
           xcpSettings->connectMode = 0;
+          xcpSettings->bypassFirmwareStart = 0;
           /* Loop through all the command line parameters, just skip the 1st one because 
            * this  is the name of the program, which we are not interested in.
            */
@@ -1197,6 +1209,15 @@ static void * ExtractSessionSettingsFromCommandLine(int argc, char const * const
             {
               /* Extract the connection mode value. */
               sscanf(&argv[paramIdx][4], "%hhu", &(xcpSettings->connectMode));
+              /* Continue with next loop iteration. */
+              continue;
+            }
+            /* Is this the -ns parameter? */
+            if ((strstr(argv[paramIdx], "-ns") != NULL) &&
+              (strlen(argv[paramIdx]) == 3))
+            {
+              /* Activate bypass firmware start mode. */
+              xcpSettings->bypassFirmwareStart = 1;
               /* Continue with next loop iteration. */
               continue;
             }

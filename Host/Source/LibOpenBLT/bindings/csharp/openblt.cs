@@ -224,6 +224,11 @@ namespace OpenBLT
                 /// Connection mode parameter in XCP connect command.
                 /// </summary>
                 public Byte connectMode;
+
+                /// <summary>
+                /// Keep the bootloader running after the update.
+                /// </summary>
+                public Byte bypassFirmwareStart;
             }
 
             /// <summary>
@@ -243,6 +248,7 @@ namespace OpenBLT
                 public UInt16 timeoutT7;
                 public IntPtr seedKeyFile;
                 public Byte connectMode;
+                public Byte bypassFirmwareStart;
             }
 
             /// <summary>
@@ -473,6 +479,7 @@ namespace OpenBLT
             ///  sessionSettings.timeoutT7 = 2000;
             ///  sessionSettings.seedKeyFile = "";
             ///  sessionSettings.connectMode = 0;
+            ///  sessionSettings.bypassFirmwareStart = 0;
             ///  
             ///  OpenBLT.Lib.Session.TransportSettingsXcpV10Rs232 transportSettings;
             ///  transportSettings.portName = "COM8";
@@ -495,6 +502,7 @@ namespace OpenBLT
                 // Convert string to unmanged string.
                 sessionSettingsUnmanaged.seedKeyFile = (IntPtr)Marshal.StringToHGlobalAnsi(sessionSettings.seedKeyFile);
                 sessionSettingsUnmanaged.connectMode = sessionSettings.connectMode;
+                sessionSettingsUnmanaged.bypassFirmwareStart = sessionSettings.bypassFirmwareStart;
 
                 // Copy the managed transport settings to an unmanaged structure.
                 TransportSettingsXcpV10Rs232Unmanaged transportSettingsUnmanaged;
@@ -553,6 +561,7 @@ namespace OpenBLT
             ///  sessionSettings.timeoutT7 = 2000;
             ///  sessionSettings.seedKeyFile = "";
             ///  sessionSettings.connectMode = 0;
+            ///  sessionSettings.bypassFirmwareStart = 0;
             ///  
             ///  OpenBLT.Lib.Session.TransportSettingsXcpV10Can transportSettings;
             ///  transportSettings.deviceName = "peak_pcanusb";
@@ -579,6 +588,7 @@ namespace OpenBLT
                 // Convert string to unmanged string.
                 sessionSettingsUnmanaged.seedKeyFile = (IntPtr)Marshal.StringToHGlobalAnsi(sessionSettings.seedKeyFile);
                 sessionSettingsUnmanaged.connectMode = sessionSettings.connectMode;
+                sessionSettingsUnmanaged.bypassFirmwareStart = sessionSettings.bypassFirmwareStart;
 
                 // Copy the managed transport settings to an unmanaged structure.
                 TransportSettingsXcpV10CanUnmanaged transportSettingsUnmanaged;
@@ -649,6 +659,7 @@ namespace OpenBLT
             ///  sessionSettings.timeoutT7 = 2000;
             ///  sessionSettings.seedKeyFile = "";
             ///  sessionSettings.connectMode = 0;
+            ///  sessionSettings.bypassFirmwareStart = 0;
             ///  
             ///  OpenBLT.Lib.Session.Init(sessionSettings);
             /// </code>
@@ -666,6 +677,7 @@ namespace OpenBLT
                 // Convert string to unmanged string.
                 sessionSettingsUnmanaged.seedKeyFile = (IntPtr)Marshal.StringToHGlobalAnsi(sessionSettings.seedKeyFile);
                 sessionSettingsUnmanaged.connectMode = sessionSettings.connectMode;
+                sessionSettingsUnmanaged.bypassFirmwareStart = sessionSettings.bypassFirmwareStart;
 
                 // Note that the USB transport layer does not require any settings. The settings structure is
                 // now formatted to be converted to unmanaged memory. Start by allocating memory on the heap for this.
@@ -709,6 +721,7 @@ namespace OpenBLT
             ///  sessionSettings.timeoutT7 = 2000;
             ///  sessionSettings.seedKeyFile = "";
             ///  sessionSettings.connectMode = 0;
+            ///  sessionSettings.bypassFirmwareStart = 0;
             ///  
             ///  OpenBLT.Lib.Session.TransportSettingsXcpV10Net transportSettings;
             ///  transportSettings.address = "192.168.178.30";
@@ -730,6 +743,7 @@ namespace OpenBLT
                 // Convert string to unmanged string.
                 sessionSettingsUnmanaged.seedKeyFile = (IntPtr)Marshal.StringToHGlobalAnsi(sessionSettings.seedKeyFile);
                 sessionSettingsUnmanaged.connectMode = sessionSettings.connectMode;
+                sessionSettingsUnmanaged.bypassFirmwareStart = sessionSettings.bypassFirmwareStart;
 
                 // Copy the managed transport settings to an unmanaged structure.
                 TransportSettingsXcpV10NetUnmanaged transportSettingsUnmanaged;
@@ -787,6 +801,7 @@ namespace OpenBLT
             ///  sessionSettings.timeoutT7 = 2000;
             ///  sessionSettings.seedKeyFile = "";
             ///  sessionSettings.connectMode = 0;
+            ///  sessionSettings.bypassFirmwareStart = 0;
             ///  
             ///  OpenBLT.Lib.Session.TransportSettingsXcpV10MbRtu transportSettings;
             ///  transportSettings.portName = "COM8";
@@ -811,6 +826,7 @@ namespace OpenBLT
                 // Convert string to unmanged string.
                 sessionSettingsUnmanaged.seedKeyFile = (IntPtr)Marshal.StringToHGlobalAnsi(sessionSettings.seedKeyFile);
                 sessionSettingsUnmanaged.connectMode = sessionSettings.connectMode;
+                sessionSettingsUnmanaged.bypassFirmwareStart = sessionSettings.bypassFirmwareStart;
 
                 // Copy the managed transport settings to an unmanaged structure.
                 TransportSettingsXcpV10MbRtuUnmanaged transportSettingsUnmanaged;

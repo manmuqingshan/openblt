@@ -66,6 +66,7 @@ type
     FLogging: Integer;
     FLogFile: String;
     FStayOpen: Integer;
+    FBypassFirmwareStart: Integer;
   public
     const GROUP_NAME='Miscellaneus';
     constructor Create;
@@ -75,6 +76,7 @@ type
     property Logging: Integer read FLogging write FLogging;
     property LogFile: String read FLogFile write FLogFile;
     property StayOpen: Integer read FStayOpen write FStayOpen;
+    property BypassFirmwareStart: Integer read FBypassFirmwareStart write FBypassFirmwareStart;
   end;
 
   //------------------------------ TSessionConfig ---------------------------------------
@@ -327,6 +329,7 @@ begin
   FLogging := 0;
   FLogFile := '';
   FStayOpen := 0;
+  FBypassFirmwareStart := 0;
 end; //*** end of Defaults ***
 
 
@@ -346,6 +349,8 @@ begin
   FLogging := XmlConfig.GetValue('logging', FLogging);
   FLogFile := String(XmlConfig.GetValue('log_file', UnicodeString(FLogFile)));
   FStayOpen := XmlConfig.GetValue('stay_open', FStayOpen);
+  FBypassFirmwareStart := XmlConfig.GetValue('bypass_firmware_start', FBypassFirmwareStart);
+
   // Close this group's key.
   XmlConfig.CloseKey;
 end; //*** end of LoadFromFile ***/
@@ -367,6 +372,7 @@ begin
   XmlConfig.SetValue('logging', FLogging);
   XmlConfig.SetValue('log_file', UnicodeString(FLogFile));
   XmlConfig.SetValue('stay_open', FStayOpen);
+  XmlConfig.SetValue('bypass_firmware_start', FBypassFirmwareStart);
   // Close this group's key.
   XmlConfig.CloseKey;
 end; //*** end of SaveToFile ***

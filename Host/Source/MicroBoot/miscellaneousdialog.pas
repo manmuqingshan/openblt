@@ -53,6 +53,7 @@ type
     BtnLogFile: TButton;
     CbxLogging: TCheckBox;
     CbxStayOpen: TCheckBox;
+    CbxBypassFirmwareStart: TCheckBox;
     EdtLogFile: TEdit;
     LblLogFile: TLabel;
     LblLogging: TLabel;
@@ -193,6 +194,7 @@ begin
   FMiscellaneousConfig.Logging := Config.Logging;
   FMiscellaneousConfig.LogFile := Config.LogFile;
   FMiscellaneousConfig.StayOpen := Config.StayOpen;
+  FMiscellaneousConfig.BypassFirmwareStart := Config.BypassFirmwareStart;
   // Initialize user interface.
   if FMiscellaneousConfig.Logging = 0 then
     CbxLogging.Checked := False
@@ -203,6 +205,12 @@ begin
     CbxStayOpen.Checked := False
   else
     CbxStayOpen.Checked := True;
+
+  if FMiscellaneousConfig.BypassFirmwareStart = 0 then
+    CbxBypassFirmwareStart.Checked := False
+  else
+    CbxBypassFirmwareStart.Checked := True;
+
   // Update the user interface.
   UpdateUserInterface;
 end; //*** end of LoadConfig ***
@@ -230,10 +238,15 @@ begin
     FMiscellaneousConfig.StayOpen := 1
   else
     FMiscellaneousConfig.StayOpen := 0;
+  if CbxBypassFirmwareStart.Checked then
+    FMiscellaneousConfig.BypassFirmwareStart := 1
+  else
+    FMiscellaneousConfig.BypassFirmwareStart := 0;
   // Store configuration.
   Config.Logging := FMiscellaneousConfig.Logging;
   Config.LogFile := FMiscellaneousConfig.LogFile;
   Config.StayOpen := FMiscellaneousConfig.StayOpen;
+  Config.BypassFirmwareStart := FMiscellaneousConfig.BypassFirmwareStart;
 end; //*** end of SaveConfig ***
 
 end.

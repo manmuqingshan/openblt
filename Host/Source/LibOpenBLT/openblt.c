@@ -146,6 +146,7 @@ LIBOPENBLT_EXPORT void BltSessionInit(uint32_t sessionType,
       xcpLoaderSettings.timeoutT7 = bltSessionSettingsXcpV10Ptr->timeoutT7;
       xcpLoaderSettings.seedKeyFile = bltSessionSettingsXcpV10Ptr->seedKeyFile;
       xcpLoaderSettings.connectMode = bltSessionSettingsXcpV10Ptr->connectMode;
+      xcpLoaderSettings.bypassFirmwareStart = (bltSessionSettingsXcpV10Ptr->bypassFirmwareStart != 0);
       xcpLoaderSettings.transport = NULL;
       xcpLoaderSettings.transportSettings = NULL;
       /* Link the correct transport layer. */

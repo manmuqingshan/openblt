@@ -86,6 +86,19 @@ object MiscellaneousForm: TMiscellaneousForm
     ShowHint = True
     TabOrder = 3
   end
+  object CbxBypassFirmwareStart: TCheckBox
+    Left = 23
+    Height = 20
+    Hint = 'Check this box to bypass the starting of the newly programmed firmware when the firmware update completes.'
+    Top = 190
+    Width = 361
+    AutoSize = False
+    Caption = 'Keep the bootloader running after the firmware update'
+    OnChange = CbxLoggingChange
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 4
+  end
   object SaveDialog: TSaveDialog
     Title = 'Log-file selection'
     DefaultExt = '.*.log'

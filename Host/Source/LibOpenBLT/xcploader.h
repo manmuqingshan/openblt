@@ -96,6 +96,8 @@ typedef struct t_xcp_loader_settings
   uint16_t timeoutT7;     
   /** \brief Connection mode used in the XCP connect command. */
   uint8_t connectMode;
+  /** \brief Boolean flag to keep the bootloader running after the update. */
+  bool bypassFirmwareStart;   
   /** \brief Seed/key algorithm library filename. */
   char const * seedKeyFile;
   /** \brief Pointer to the transport layer to use during protocol communications. */

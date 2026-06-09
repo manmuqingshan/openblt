@@ -827,6 +827,7 @@ var
   transportSettingsXcpNet: tBltTransportSettingsXcpV10Net;
   sessionSettingsPtr: Pointer;
   transportSettingsPtr: Pointer;
+  miscellaneousConfig: TMiscellaneousConfig;
 begin
   // Initialize locals.
   sessionSettingsPtr := nil;
@@ -844,6 +845,9 @@ begin
     // Obtain access to the related configuration group.
     sessionXcpConfig := FFirmwareUpdate.FCurrentConfig.Groups[TSessionXcpConfig.GROUP_NAME]
                         as TSessionXcpConfig;
+    // Obtain access to the misellaneous configuration settings.
+    miscellaneousConfig := FFirmwareUpdate.FCurrentConfig.Groups[TMiscellaneousConfig.GROUP_NAME]
+                           as TMiscellaneousConfig;
     // Copy over the settings.
     sessionSettingsXcp.timeoutT1 := sessionXcpConfig.TimeoutT1;
     sessionSettingsXcp.timeoutT3 := sessionXcpConfig.TimeoutT3;
@@ -852,6 +856,7 @@ begin
     sessionSettingsXcp.timeoutT6 := sessionXcpConfig.TimeoutT6;
     sessionSettingsXcp.timeoutT7 := sessionXcpConfig.TimeoutT7;
     sessionSettingsXcp.connectMode := sessionXcpConfig.ConnectMode;
+    sessionSettingsXcp.bypassFirmwareStart := miscellaneousConfig.BypassFirmwareStart;
     sessionSettingsXcp.seedKeyFile := PAnsiChar(AnsiString(sessionXcpConfig.SeedKey));
     // Point the session settings pointer to this one.
     sessionSettingsPtr := @sessionSettingsXcp;
@@ -989,10 +994,14 @@ procedure TFirmwareUpdateThread.LogSessionProtocolSettings;
 var
   sessionConfig: TSessionConfig;
   sessionXcpConfig: TSessionXcpConfig;
+  miscellaneousConfig: TMiscellaneousConfig;
 begin
   // Obtain access to the related configuration group.
   sessionConfig := FFirmwareUpdate.FCurrentConfig.Groups[TSessionConfig.GROUP_NAME]
                    as TSessionConfig;
+  // Obtain access to the misellaneous configuration settings.
+  miscellaneousConfig := FFirmwareUpdate.FCurrentConfig.Groups[TMiscellaneousConfig.GROUP_NAME]
+                         as TMiscellaneousConfig;
   // Filter on the configured session protocol.
   if sessionConfig.Session = 'xcp' then
   begin
@@ -1017,6 +1026,11 @@ begin
       FLogString := '  -> Seed/Key file: ' + 'None';
     Synchronize(@SynchronizeLogEvent);
     FLogString := '  -> Connection mode: ' + IntToStr(sessionXcpConfig.ConnectMode);
+    Synchronize(@SynchronizeLogEvent);
+    if miscellaneousConfig.BypassFirmwareStart <> 0 then
+      FLogString := '  -> Bypass firmware start: ' + 'Yes'
+    else
+      FLogString := '  -> Bypass firmware start: ' + 'No';
     Synchronize(@SynchronizeLogEvent);
   end
   else
