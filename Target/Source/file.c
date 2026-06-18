@@ -72,10 +72,6 @@ static blt_int8u     FileLibHexStringToByte(const blt_char *hexstring);
 ****************************************************************************************/
 extern blt_bool        FileIsFirmwareUpdateRequestedHook(void);
 extern const blt_char *FileGetFirmwareFilenameHook(void);
-extern void            FileFirmwareUpdateStartedHook(void);
-extern void            FileFirmwareUpdateCompletedHook(void);
-extern void            FileFirmwareUpdateErrorHook(blt_int8u error_code);
-extern void            FileFirmwareUpdateLogHook(blt_char *info_string);
 
 
 /****************************************************************************************
