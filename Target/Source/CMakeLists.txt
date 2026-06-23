@@ -232,6 +232,7 @@ target_sources(openblt-armcm0-stm32c0 INTERFACE
     "${CMAKE_CURRENT_LIST_DIR}/ARMCM0_STM32C0/nvm.c"
     "${CMAKE_CURRENT_LIST_DIR}/ARMCM0_STM32C0/rs232.c"
     "${CMAKE_CURRENT_LIST_DIR}/ARMCM0_STM32C0/timer.c"
+    "${CMAKE_CURRENT_LIST_DIR}/ARMCM0_STM32C0/usb.c"
 )
 
 target_include_directories(openblt-armcm0-stm32c0 INTERFACE 
