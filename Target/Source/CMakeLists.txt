@@ -287,6 +287,7 @@ target_sources(openblt-armcm0-stm32f0 INTERFACE
     "${CMAKE_CURRENT_LIST_DIR}/ARMCM0_STM32F0/nvm.c"
     "${CMAKE_CURRENT_LIST_DIR}/ARMCM0_STM32F0/rs232.c"
     "${CMAKE_CURRENT_LIST_DIR}/ARMCM0_STM32F0/timer.c"
+    "${CMAKE_CURRENT_LIST_DIR}/ARMCM0_STM32F0/usb.c"
 )
 
 target_include_directories(openblt-armcm0-stm32f0 INTERFACE 
@@ -341,6 +342,7 @@ target_sources(openblt-armcm0-stm32g0 INTERFACE
     "${CMAKE_CURRENT_LIST_DIR}/ARMCM0_STM32G0/nvm.c"
     "${CMAKE_CURRENT_LIST_DIR}/ARMCM0_STM32G0/rs232.c"
     "${CMAKE_CURRENT_LIST_DIR}/ARMCM0_STM32G0/timer.c"
+    "${CMAKE_CURRENT_LIST_DIR}/ARMCM0_STM32G0/usb.c"
 )
 
 target_include_directories(openblt-armcm0-stm32g0 INTERFACE 
@@ -886,6 +888,7 @@ target_sources(openblt-armcm4-stm32g4 INTERFACE
     "${CMAKE_CURRENT_LIST_DIR}/ARMCM4_STM32G4/nvm.c"
     "${CMAKE_CURRENT_LIST_DIR}/ARMCM4_STM32G4/rs232.c"
     "${CMAKE_CURRENT_LIST_DIR}/ARMCM4_STM32G4/timer.c"
+    "${CMAKE_CURRENT_LIST_DIR}/ARMCM4_STM32G4/usb.c"
 )
 
 target_include_directories(openblt-armcm4-stm32g4 INTERFACE 
