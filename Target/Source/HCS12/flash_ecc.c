@@ -172,6 +172,15 @@ typedef struct
 
 
 /****************************************************************************************
+* Hook functions
+****************************************************************************************/
+#if (BOOT_FLASH_CRYPTO_HOOKS_ENABLE > 0)
+extern blt_bool FlashCryptoDecryptDataHook(blt_addr address, blt_int8u * data, 
+                                           blt_int32u size);
+#endif
+
+
+/****************************************************************************************
 * Function prototypes
 ****************************************************************************************/
 static blt_bool   FlashInitBlock(tFlashBlockInfo *block, blt_addr address);
@@ -454,11 +463,17 @@ blt_bool FlashWrite(blt_addr addr, blt_int32u len, blt_int8u *data)
   blt_addr base_addr;
   blt_addr last_block_base_addr;
 
+  /* validate the len parameter */
+  if ((len - 1) > (FLASH_END_ADDRESS - addr))
+  {
+    return BLT_FALSE;
+  }
+
   /* make sure the addresses are within the flash device */
   if ((addr < FLASH_START_ADDRESS) || ((addr+len-1) > FLASH_END_ADDRESS))
   {
     return BLT_FALSE;
-  }
+  }          
 
   /* determine the start address of the last block in flash */
   last_block_base_addr = flashLayout[FLASH_LAST_SECTOR_IDX].sector_start + \
@@ -492,6 +507,12 @@ blt_bool FlashErase(blt_addr addr, blt_int32u len)
   blt_int16u nr_of_erase_blocks;
   blt_int32u total_erase_len;
   blt_int16u block_cnt;
+
+  /* validate the len parameter */
+  if ((len - 1) > (FLASH_END_ADDRESS - addr))
+  {
+    return BLT_FALSE;
+  }
 
   /* determine the base address for the erase operation, by aligning to
    * FLASH_ERASE_BLOCK_SIZE.
@@ -570,6 +591,17 @@ blt_bool FlashWriteChecksum(void)
   {
     return BLT_TRUE;
   }
+
+#if (BOOT_FLASH_CRYPTO_HOOKS_ENABLE > 0)
+  /* perform decryption of the bootblock, before calculating the checksum and writing it
+   * to flash memory.
+   */
+  if (FlashCryptoDecryptDataHook(bootBlockInfo.base_addr, bootBlockInfo.data, 
+                                 FLASH_WRITE_BLOCK_SIZE) == BLT_FALSE)
+  {
+    return BLT_FALSE;
+  }
+#endif
 
   /* the bootblock contains the data for the last sector in flashLayout. the
    * user program vector table and the checkum will be located at the end
@@ -723,7 +755,6 @@ static blt_bool FlashInitBlock(tFlashBlockInfo *block, blt_addr address)
   }
   /* set the base address */
   block->base_addr = address;
-
   /* backup originally selected page */
   oldPage = FLASH_PPAGE_REG;
   /* select correct page */
@@ -848,7 +879,7 @@ static blt_bool FlashAddToBlock(tFlashBlockInfo *block, blt_addr address,
     if ((blt_addr)(dst-&(block->data[0])) >= FLASH_WRITE_BLOCK_SIZE)
     {
       /* need to switch to a new block, so program the current one and init the next */
-      block = FlashSwitchBlock(block, current_base_addr+FLASH_WRITE_BLOCK_SIZE);
+      block = FlashSwitchBlock(block, block->base_addr+FLASH_WRITE_BLOCK_SIZE);
       if (block == BLT_NULL)
       {
         return BLT_FALSE;
@@ -891,6 +922,23 @@ static blt_bool FlashWriteBlock(tFlashBlockInfo *block)
   {
     return BLT_FALSE;
   }
+
+#if (BOOT_FLASH_CRYPTO_HOOKS_ENABLE > 0)
+  #if (BOOT_NVM_CHECKSUM_HOOKS_ENABLE == 0)
+  /* note that the bootblock is already decrypted in FlashWriteChecksum(), if the
+   * internal checksum mechanism is used. Therefore don't decrypt it again.
+   */
+  if (block != &bootBlockInfo)
+  #endif
+  {
+    /* perform decryption of the program data before writing it to flash memory. */
+    if (FlashCryptoDecryptDataHook(block->base_addr, block->data, 
+                                   FLASH_WRITE_BLOCK_SIZE) == BLT_FALSE)
+    {
+      return BLT_FALSE;
+    }
+  }
+#endif
 
   /* program all phrases in the block one by one */
   for (phrase_cnt=0; phrase_cnt<(FLASH_WRITE_BLOCK_SIZE/FLASH_PHRASE_SIZE); phrase_cnt++)
