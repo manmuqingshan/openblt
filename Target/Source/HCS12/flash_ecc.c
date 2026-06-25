@@ -257,6 +257,9 @@ static const tFlashSector flashLayout[] =
   /* { 0x3F000, 0x0800 },                  flash sector - 2kb (reserved for bootloader)*/
   /* { 0x3F800, 0x0800 },                  flash sector - 2kb (reserved for bootloader)*/
 };
+#else
+#include "flash_layout.c"
+#endif /* BOOT_FLASH_CUSTOM_LAYOUT_ENABLE == 0 */
 
 
 /** \brief   Lookup table for determining the flash clock divider setting based on the
@@ -299,9 +302,6 @@ static const tFlashPrescalerSysclockMapping flashFDIVlookup[] =
   { 30600, 31600, 0x1E },                 /* FDIV[5:0] = prescaler = 0x1E                */
   { 31600, 32600, 0x1F }                  /* FDIV[5:0] = prescaler = 0x1F                */
 };
-#else
-#include "flash_layout.c"
-#endif /* BOOT_FLASH_CUSTOM_LAYOUT_ENABLE == 0 */
 
 
 /** \brief  Array with executable code for performing flash operations.
