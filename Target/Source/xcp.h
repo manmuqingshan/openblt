@@ -39,9 +39,14 @@
 #define XCP_DTO_PACKET_LEN             (ComGetActiveInterfaceMaxTxLen())
 
 /** \brief Name in string format that is used to identify the ECU to the XCP master
- *         using the GET_ID command.
+ *         using the GET_ID command. Note that you can override its value using macro
+ *         BOOT_XCP_STATION_ID_STRING in "blt_conf.h"
  */
-#define XCP_STATION_ID_STRING          "OpenBLT"
+#ifdef BOOT_XCP_STATION_ID_STRING
+#define XCP_STATION_ID_STRING          BOOT_XCP_STATION_ID_STRING
+#else
+#define XCP_STATION_ID_STRING          "OpenBLT" 
+#endif 
 
 #if (BOOT_CPU_BYTE_ORDER_MOTOROLA > 0)
 /** \brief XCP byte ordering according to the Motorola (big-endian). */
